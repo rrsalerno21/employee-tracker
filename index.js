@@ -4,6 +4,7 @@ const cTable = require('console.table');
 const config = require('./private/config');
 const util = require('util');
 const colors = require('colors');
+const queries = require('./Assets/db/queries');
 
 function makeDb() {
     const connection = mysql.createConnection(config);
@@ -80,5 +81,18 @@ async function start() {
             break;
     }
 };
+
+// return query function
+async function returnQuery(query) {
+    try {
+        const curQuery = await db.query(query);
+        console.log(curQuery);
+        return curQuery;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 
 
