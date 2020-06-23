@@ -51,5 +51,11 @@ const queries = {
 
 	viewAllRoles:
 		`SELECT 
-			id AS `
+			role.id AS 'Role #',
+			role.title,
+			role.salary,
+			department.name AS 'Department'
+		FROM 
+			role
+		LEFT JOIN department ON (role.department_id = department.id);`
 }
