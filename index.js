@@ -43,7 +43,8 @@ async function start() {
                         'Update Employee Manager',
                         'View All Roles',
                         'Add Role',
-                        'Remove Role'
+                        'Remove Role',
+                        'Exit'
                     ]
                 }
             ]
@@ -86,6 +87,8 @@ async function start() {
             case 'Remove Role':
                 //
                 break;
+            case 'Exit':
+                db.close();
         }
     } catch (error) {
         throw error;
