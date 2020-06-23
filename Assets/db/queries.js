@@ -2,7 +2,7 @@
 const queries = {
 	viewAllEmployees: 
 		`SELECT
-			eT.id,
+			eT.id AS 'Emp. #',
 			eT.first_name,
 			eT.last_name,
 			role.title,
