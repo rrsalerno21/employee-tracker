@@ -93,6 +93,20 @@ async function returnQuery(query) {
     }
 }
 
+async function consoleTable(title, data) {
+    try {
+        // for creating a table
+        if (data.length === 0) {
+            console.log(`-------------- \n${colors.bold.red('\nThere is currently no data to display.  Add data to get started!')}\n`)
+        } else {
+            console.log(`-------------- \n${colors.bold(title)}\n`)
+            console.table(data);
+            //console.log(`=> ${colors.blue(query[index].item_name)} (Bid:$${query[index].highest_bid})\n`);
+        };
+    } catch (error) {
+        throw error;
+    }
+}
 
 
 
