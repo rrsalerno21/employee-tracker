@@ -48,4 +48,8 @@ const queries = {
 		INNER JOIN role ON (eT.role_id = role.id)
 		INNER JOIN  department ON (department.id = role.department_id)
 		ORDER BY 'Manager'`,
+
+	viewAllRoles:
+		`SELECT 
+			id AS `
 }
