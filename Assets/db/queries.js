@@ -59,3 +59,5 @@ const queries = {
 			role
 		LEFT JOIN department ON (role.department_id = department.id);`
 }
+
+module.exports = queries;
