@@ -48,16 +48,21 @@ async function start() {
                 }
             ]
         );
-    
+        
+        let data;
+
         switch (startResponse.operation) {
             case 'View All Employees':
-                //
+                data = await returnQuery(queries.viewAllEmployees);
+                consoleTable('All Employees', data);
                 break;
             case 'View All Employees by Department':
-                //
+                data = await returnQuery(queries.viewAllEmployeesByDepartment);
+                consoleTable('All Employees by Department', data);
                 break;
             case 'View All Employees by Manager':
-                //
+                data = await returnQuery(queries.viewAllEmployeesByManager);
+                consoleTable('All Employees by Manager', data);
                 break;
             case 'Add Employee':
                 //
@@ -72,7 +77,8 @@ async function start() {
                 //
                 break;
             case 'View All Roles':
-                //
+                data = await returnQuery(queries.viewAllRoles);
+                consoleTable('All Roles', data);
                 break;
             case 'Add Role':
                 //
@@ -97,16 +103,23 @@ async function returnQuery(query) {
     }
 }
 
-function consoleTable(title, data) {
-    // for creating a table
-    if (data.length === 0) {
-        console.log(`-------------- \n${colors.bold.red('\nThere is currently no data to display.  Add data to get started!')}\n`)
-    } else {
-        console.log(`-------------- \n${colors.bold(title)}\n`)
-        console.table(data);
-        //console.log(`=> ${colors.blue(query[index].item_name)} (Bid:$${query[index].highest_bid})\n`);
-    };
+async function consoleTable(title, data) {
+    try {
+        // for creating a table
+        if (data.length === 0) {
+            console.log(`-------------- \n${colors.bold.red('\nThere is currently no data to display.  Add data to get started!')}\n`)
+        } else {
+            console.log(`-------------- \n${colors.bold(title)}\n`)
+            console.table(data);
+            //console.log(`=> ${colors.blue(query[index].item_name)} (Bid:$${query[index].highest_bid})\n`);
+        };
+    } catch (error) {
+        throw error;
+    } finally {
+        start();
+    }
 }
 
 
 
+start();
