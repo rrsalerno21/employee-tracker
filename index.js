@@ -69,7 +69,7 @@ async function start() {
                 addEmp();
                 break;
             case 'Remove Employee':
-                //
+                removeData('employee');
                 break;
             case 'Update Employee Role':
                 //
@@ -85,7 +85,7 @@ async function start() {
                 //
                 break;
             case 'Remove Role':
-                //
+                removeData('role');
                 break;
             case 'Exit':
                 db.close();
@@ -201,6 +201,81 @@ async function addEmp() {
         start();
     }
     
+}
+
+async function removeData(type) {
+    if (type === 'employee') {
+        try {
+            const curEmployees = await returnQuery(queries.curEmployees);
+
+            let empNames = [];
+            for (i in curEmployees) {
+                empNames.push(curEmployees[i].name);
+            };
+
+            const response = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'whoToRemove',
+                    message: 'Which employee would you like to remove?',
+                    choices: empNames
+                }
+            ]);
+
+            let delId;
+
+            for (i in curEmployees) {
+                if (curEmployees[i].name === response.whoToRemove) {
+                    delId = curEmployees[i].id;
+                }
+            }
+
+            const delEmpQuery = await db.query(`DELETE FROM employee WHERE id = ${delId}`)
+
+            console.log(colors.bold.green(`\n${response.whoToRemove} removed from employee list\n`));
+
+        } catch (error) {
+            throw error;
+        } finally {
+            start();
+        }
+
+    } else if (type === 'role') {
+        try {
+            const curRoles = await returnQuery(queries.curRoles);
+
+            let roleTitles = [];
+            for (i in curRoles) {
+                roleTitles.push(curRoles[i].title);
+            };
+
+            const response = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'roleToRemove',
+                    message: 'Which role would you like to remove?',
+                    choices: roleTitles
+                }
+            ]);
+
+            let delId;
+
+            for (i in curRoles) {
+                if (curRoles[i].title === response.roleToRemove) {
+                    delId = curRoles[i].id;
+                }
+            }
+
+            const delEmpQuery = await db.query(`DELETE FROM role WHERE id = ${delId}`);
+
+            console.log(colors.bold.green(`\n${response.roleToRemove} removed from role list\n`));
+
+        } catch (error) {
+            throw error;
+        } finally {
+            start();
+        }
+    }
 }
 
 start();
