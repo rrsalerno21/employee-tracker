@@ -82,7 +82,7 @@ async function start() {
                 consoleTable('All Roles', data);
                 break;
             case 'Add Role':
-                //
+                addRole();
                 break;
             case 'Remove Role':
                 removeData('role');
@@ -201,6 +201,56 @@ async function addEmp() {
         start();
     }
     
+}
+
+async function addRole() {
+    try {
+        const deptQuery = await returnQuery('SELECT id, name FROM department');
+
+        let deptArray = [];
+        for (i in deptQuery) {
+            deptArray.push(deptQuery[i].name);
+        }
+
+        const response = await inquirer.prompt([
+            {
+                type:'input',
+                name: 'roleName',
+                message: `What is the name of the role you'd like to add?`
+            },
+            {
+                type:'number',
+                name: 'salary',
+                message: `What is the salary for this role?`
+            },
+            {
+                type:'list',
+                name: 'department',
+                message: `What department does this role belong to?`,
+                choices: deptQuery
+            }
+        ]);
+
+        let deptID;
+        for (i in deptQuery) {
+            if (response.department === deptQuery[i].name) {
+                deptID = deptQuery[i].id;
+            }
+        }
+
+        console.log(deptID);
+
+        const addRoleQuery = await db.query(
+            `INSERT INTO role (title, salary, department_id) 
+            VALUES ('${response.roleName}', '${response.salary}', ${deptID})`);
+        
+        console.log(colors.bold.green(`\n${response.roleName} successfully added to roles.\n`));    
+
+    } catch (error) {
+        throw error;
+    } finally {
+        start();
+    }
 }
 
 async function removeData(type) {
