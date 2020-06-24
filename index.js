@@ -66,7 +66,7 @@ async function start() {
                 consoleTable('All Employees by Manager', data);
                 break;
             case 'Add Employee':
-                //
+                addEmp();
                 break;
             case 'Remove Employee':
                 //
@@ -123,6 +123,96 @@ async function consoleTable(title, data) {
     }
 }
 
+async function addEmp() {
+    try {
+        const curEmployees = await returnQuery(`
+            SELECT DISTINCT
+                id,
+                CONCAT(first_name, ' ', last_name) AS 'name'
+            FROM 
+                employee
+        `);
 
+        const curRoles = await returnQuery(`
+            SELECT DISTINCT
+                id,
+                title
+            FROM 
+                role
+        `);
+
+        let roles = [], managers = [];
+
+        for (i in curEmployees) {
+            managers.push(curEmployees[i].name);
+        };
+
+        for (i in curRoles) {
+            roles.push(curRoles[i].title);
+        };
+
+        console.log(roles),
+        console.log(managers)
+        const result = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'first_name',
+                message: `What is the employee's first name?`
+            },
+            {
+                type: 'input',
+                name: 'last_name',
+                message: `What is the employee's last name?`
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: `What is the employee's role?`,
+                choices: roles
+            },
+            {
+                type: 'list',
+                name: `manager`,
+                message: `Who is the manager for this employee?`,
+                choices: [...managers, 'No Manager']
+            }
+        ]
+
+        );
+
+        // handle the no manager case
+        let finalManagerId, roleID;
+        if (result.manager === 'No Manager') {
+            finalManagerId = null; 
+        } else {
+            for (i in curEmployees) {
+                if (curEmployees[i].name === result.manager) {
+                    finalManagerId = curEmployees[i].id;
+                    break;
+                }
+            }
+        };
+
+        // find and set the correct role ID
+        for (i in curRoles) {
+            if (curRoles[i].title === result.role) {
+                roleID = curRoles[i].id;
+            }
+        }
+
+        // insert add code here
+        const addQuery = await db.query(`
+            INSERT INTO employee (first_name, last_name, role_id, manager_id)
+            VALUES ('${result.first_name}', '${result.last_name}', ${roleID}, ${finalManagerId})`)
+
+        console.log(colors.bold.green(`\n${result.first_name} ${result.last_name} added to employee list\n`));
+
+    } catch (error) {
+        if (error) throw error;
+    } finally {
+        start();
+    }
+    
+}
 
 start();
