@@ -72,10 +72,10 @@ async function start() {
                 removeData('employee');
                 break;
             case 'Update Employee Role':
-                //
+                updateData('role');
                 break;
             case 'Update Employee Manager':
-                //
+                updateData('manager');
                 break;
             case 'View All Roles':
                 data = await returnQuery(queries.viewAllRoles);
@@ -325,6 +325,97 @@ async function removeData(type) {
         } finally {
             start();
         }
+    }
+}
+
+async function updateData(detail) {
+    try {
+        const curEmployees = await returnQuery(queries.curEmployees);
+        
+        let empArray = [];
+        for (i in curEmployees) {
+            empArray.push(curEmployees[i].name);
+        }
+        
+        const response = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: 'Which employee would you like to update?',
+                choices: empArray
+            }
+        ]);
+        
+        let empID;
+        for (i in curEmployees) {
+            if (curEmployees[i].name === response.employee) {
+                empID = curEmployees[i].id;
+                break;
+            }
+        }
+
+        switch (detail) {
+            case 'role':
+                const curRoles = await returnQuery(queries.curRoles);
+                rolesArray = [];
+                for (i in curRoles) {
+                    rolesArray.push(curRoles[i].title);
+                }
+
+                const roleResponse = await inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'newRole',
+                        message: 'Which role would you like to reassign this employee to?',
+                        choices: rolesArray
+                    }
+                ]);
+
+                let newRoleID;
+                for (i in curRoles) {
+                    if (curRoles[i].title === roleResponse.newRole) {
+                        newRoleID = curRoles[i].id;
+                        break;
+                    }
+                }
+                console.log(newRoleID);
+
+                const updateRoleQuery = await db.query('UPDATE employee SET ? WHERE ?', [{role_id: newRoleID},{id: empID}])
+
+                console.log(colors.bold.green(`\n ${response.employee} role successfully updated. \n`))
+                break;
+            case 'manager':
+                const filteredEmpArray = empArray.filter(item => item != response.employee)
+                const managerResponse = await inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: `manager`,
+                        message: `Who is the new manager for this employee?`,
+                        choices: [...filteredEmpArray, 'No Manager']
+                    }
+                ]);
+
+                let finalManagerId;
+                if (managerResponse.manager === 'No Manager') {
+                    finalManagerId = null; 
+                } else {
+                    for (i in curEmployees) {
+                        if (curEmployees[i].name === managerResponse.manager) {
+                            finalManagerId = curEmployees[i].id;
+                            break;
+                        }
+                    }
+                };
+
+                const updateManagerQuery = await db.query('UPDATE employee SET ? WHERE ?', [{manager_id: finalManagerId},{id: empID}])
+
+                console.log(colors.bold.green(`\n ${response.employee}'s manager successfully updated to ${managerResponse.manager}. \n`))
+            }
+
+    } catch (error) {
+        throw error;
+    } finally {
+        start();
     }
 }
 
