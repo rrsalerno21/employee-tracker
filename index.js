@@ -80,7 +80,7 @@ async function start() {
                 updateData('manager');
                 break;
             case 'Add Department':
-                //
+                addDepartment();
                 break;
             case 'Remove Department':
                 removeData('department');
@@ -256,6 +256,26 @@ async function addRole() {
 
     } catch (error) {
         throw error;
+    } finally {
+        start();
+    }
+}
+
+async function addDepartment() {
+    try {
+        const response = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'department',
+                message: 'What is the name of the department?'
+            }
+        ])
+
+        const addDeptQuery = await db.query(`INSERT INTO department (name) VALUES ('${response.department}')`)
+
+        console.log(colors.bold.green(`\n${response.department} department successfully added\n`))
+    } catch (error) {
+        throw error
     } finally {
         start();
     }
