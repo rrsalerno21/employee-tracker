@@ -57,7 +57,19 @@ const queries = {
 			department.name AS 'Department'
 		FROM 
 			role
-		LEFT JOIN department ON (role.department_id = department.id);`
+		LEFT JOIN department ON (role.department_id = department.id)`,
+	curEmployees: 
+		`SELECT DISTINCT
+            id,
+            CONCAT(first_name, ' ', last_name) AS 'name'
+        FROM 
+			employee`,
+	curRoles:
+		`SELECT DISTINCT
+			id,
+			title
+		FROM 
+			role`
 }
 
 module.exports = queries;

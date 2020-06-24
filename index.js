@@ -125,21 +125,9 @@ async function consoleTable(title, data) {
 
 async function addEmp() {
     try {
-        const curEmployees = await returnQuery(`
-            SELECT DISTINCT
-                id,
-                CONCAT(first_name, ' ', last_name) AS 'name'
-            FROM 
-                employee
-        `);
+        const curEmployees = await returnQuery(queries.curEmployees);
 
-        const curRoles = await returnQuery(`
-            SELECT DISTINCT
-                id,
-                title
-            FROM 
-                role
-        `);
+        const curRoles = await returnQuery(queries.curRoles);
 
         let roles = [], managers = [];
 
