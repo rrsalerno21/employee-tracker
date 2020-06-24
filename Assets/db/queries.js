@@ -14,7 +14,7 @@ const queries = {
 		LEFT JOIN employee AS mT ON (eT.manager_id = mT.id)
 		INNER JOIN role ON (eT.role_id = role.id)
 		INNER JOIN  department ON (department.id = role.department_id)
-		ORDER BY eT.last_name`,
+		ORDER BY eT.id`,
 
 	viewAllEmployeesByDepartment: 
 	`SELECT
