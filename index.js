@@ -41,6 +41,8 @@ async function start() {
                         'Remove Employee',
                         'Update Employee Role',
                         'Update Employee Manager',
+                        'Add Department',
+                        'Remove Department',
                         'View All Roles',
                         'Add Role',
                         'Remove Role',
@@ -76,6 +78,12 @@ async function start() {
                 break;
             case 'Update Employee Manager':
                 updateData('manager');
+                break;
+            case 'Add Department':
+                //
+                break;
+            case 'Remove Department':
+                removeData('department');
                 break;
             case 'View All Roles':
                 data = await returnQuery(queries.viewAllRoles);
@@ -319,6 +327,39 @@ async function removeData(type) {
             const delEmpQuery = await db.query(`DELETE FROM role WHERE id = ${delId}`);
 
             console.log(colors.bold.green(`\n${response.roleToRemove} removed from role list\n`));
+
+        } catch (error) {
+            throw error;
+        } finally {
+            start();
+        }
+    } else if (type === 'department') {
+        try {
+            const deptQuery = await returnQuery('SELECT id, name FROM department');
+            let deptArray = [];
+            for (i in deptQuery) {
+                deptArray.push(deptQuery[i].name)
+            };
+
+            const deptResponse = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: `Which department would you like to remove?`,
+                    choices: deptArray
+                }
+            ])
+
+            let deptID;
+            for (i in deptQuery) {
+                if (deptQuery[i].name === deptResponse.department) {
+                    deptID = deptQuery[i].id;
+                    break;
+                }
+            }
+
+            const delDeptQuery = await db.query(`DELETE FROM department WHERE id = ${deptID}`);
+            console.log(colors.bold.green(`\n${deptResponse.department} removed from department list\n`));
 
         } catch (error) {
             throw error;
