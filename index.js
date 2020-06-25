@@ -159,8 +159,6 @@ async function addEmp() {
             roles.push(curRoles[i].title);
         };
 
-        console.log(roles),
-        console.log(managers)
         const result = await inquirer.prompt([
             {
                 type: 'input',
@@ -257,8 +255,6 @@ async function addRole() {
                 deptID = deptQuery[i].id;
             }
         }
-
-        console.log(deptID);
 
         const addRoleQuery = await db.query(
             `INSERT INTO role (title, salary, department_id) 
@@ -457,6 +453,7 @@ async function updateData(detail) {
 
                 console.log(colors.bold.green(`\n ${response.employee} role successfully updated. \n`))
                 break;
+                
             case 'manager':
                 const filteredEmpArray = empArray.filter(item => item != response.employee)
                 const managerResponse = await inquirer.prompt([
