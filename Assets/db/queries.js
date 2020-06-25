@@ -69,7 +69,12 @@ const queries = {
 			id,
 			title
 		FROM 
-			role`
+			role`,
+	viewAllDepartments:
+		`SELECT 
+			id AS 'Dept #', 
+			name AS 'Department' 
+		FROM department`
 }
 
 module.exports = queries;

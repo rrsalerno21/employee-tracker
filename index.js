@@ -41,6 +41,7 @@ async function start() {
                         'Remove Employee',
                         'Update Employee Role',
                         'Update Employee Manager',
+                        'View All Departments',
                         'Add Department',
                         'Remove Department',
                         'View All Roles',
@@ -78,6 +79,10 @@ async function start() {
                 break;
             case 'Update Employee Manager':
                 updateData('manager');
+                break;
+            case 'View All Departments':
+                data = await returnQuery(queries.viewAllDepartments);
+                consoleTable('All Departments', data);
                 break;
             case 'Add Department':
                 addDepartment();
