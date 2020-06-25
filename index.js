@@ -544,4 +544,5 @@ async function updateData(detail) {
     }
 }
 
+console.log(colors.bold.bgBlue.white(`\n Welcome to your Employee Tracker! \n`))
 start();
