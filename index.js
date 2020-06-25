@@ -447,13 +447,12 @@ async function updateData(detail) {
                         break;
                     }
                 }
-                console.log(newRoleID);
 
                 const updateRoleQuery = await db.query('UPDATE employee SET ? WHERE ?', [{role_id: newRoleID},{id: empID}])
 
                 console.log(colors.bold.green(`\n ${response.employee} role successfully updated. \n`))
                 break;
-                
+
             case 'manager':
                 const filteredEmpArray = empArray.filter(item => item != response.employee)
                 const managerResponse = await inquirer.prompt([
