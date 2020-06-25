@@ -67,7 +67,7 @@ const queries = {
 	curRoles:
 		`SELECT DISTINCT
 			id,
-			title
+			title AS 'name'
 		FROM 
 			role`,
 	viewAllDepartments:
