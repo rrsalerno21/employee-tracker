@@ -148,15 +148,8 @@ async function addEmp() {
         // get current role id's and titles
         const curRoles = await db.query(queries.curRoles);
 
-        let roles = [], managers = [];
-
-        for (item of curEmployees) {
-            managers.push(item.name);
-        };
-
-        for (item of curRoles) {
-            roles.push(item.title);
-        };
+        const managers = curEmployees.map(obj => obj.name);
+        const roles = curRoles.map(obj => obj.title);
 
         const result = await inquirer.prompt([
             {
@@ -202,6 +195,7 @@ async function addEmp() {
         for (item of curRoles) {
             if (item.title === result.role) {
                 roleID = item.id;
+                break;
             }
         }
 
@@ -224,10 +218,7 @@ async function addRole() {
     try {
         const deptQuery = await db.query('SELECT id, name FROM department');
 
-        let deptArray = [];
-        for (item of deptQuery) {
-            deptArray.push(item.name);
-        }
+        const deptArray = deptQuery.map(obj => obj.name);
 
         const response = await inquirer.prompt([
             {
@@ -252,6 +243,7 @@ async function addRole() {
         for (item of deptQuery) {
             if (response.department === item.name) {
                 deptID = item.id;
+                break;
             }
         }
 
@@ -293,10 +285,7 @@ async function removeData(type) {
         try {
             const curEmployees = await db.query(queries.curEmployees);
 
-            let empNames = [];
-            for (item of curEmployees) {
-                empNames.push(item.name);
-            };
+            const empNames = curEmployees.map(obj => obj.name);
 
             const response = await inquirer.prompt([
                 {
@@ -312,6 +301,7 @@ async function removeData(type) {
             for (item of curEmployees) {
                 if (item.name === response.whoToRemove) {
                     delId = item.id;
+                    break;
                 }
             }
 
@@ -329,10 +319,7 @@ async function removeData(type) {
         try {
             const curRoles = await db.query(queries.curRoles);
 
-            let roleTitles = [];
-            for (item of curRoles) {
-                roleTitles.push(item.title);
-            };
+            const roleTitles = curRoles.map(obj => obj.title);
 
             const response = await inquirer.prompt([
                 {
@@ -348,6 +335,7 @@ async function removeData(type) {
             for (item of curRoles) {
                 if (item.title === response.roleToRemove) {
                     delId = item.id;
+                    break;
                 }
             }
 
@@ -363,10 +351,8 @@ async function removeData(type) {
     } else if (type === 'department') {
         try {
             const deptQuery = await db.query('SELECT id, name FROM department');
-            let deptArray = [];
-            for (item of deptQuery) {
-                deptArray.push(item.name)
-            };
+            
+            const deptArray = deptQuery.map(obj => obj.name);
 
             const deptResponse = await inquirer.prompt([
                 {
@@ -400,10 +386,7 @@ async function updateData(detail) {
     try {
         const curEmployees = await db.query(queries.curEmployees);
         
-        let empArray = [];
-        for (item of curEmployees) {
-            empArray.push(item.name);
-        }
+        const empArray = curEmployees.map(obj => obj.name);
         
         const response = await inquirer.prompt([
             {
@@ -425,11 +408,9 @@ async function updateData(detail) {
         switch (detail) {
             case 'role':
                 const curRoles = await db.query(queries.curRoles);
-                rolesArray = [];
-                for (item of curRoles) {
-                    rolesArray.push(item.title);
-                }
-
+                
+                const rolesArray = curRoles.map(obj => obj.title);
+                
                 const roleResponse = await inquirer.prompt([
                     {
                         type: 'list',
