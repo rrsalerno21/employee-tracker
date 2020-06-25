@@ -216,7 +216,7 @@ async function addEmp() {
 
 async function addRole() {
     try {
-        const deptQuery = await db.query('SELECT id, name FROM department');
+        const deptQuery = await db.query(queries.curDepartments);
 
         const deptArray = deptQuery.map(obj => obj.name);
 
@@ -350,7 +350,7 @@ async function removeData(type) {
         }
     } else if (type === 'department') {
         try {
-            const deptQuery = await db.query('SELECT id, name FROM department');
+            const deptQuery = await db.query(queries.curDepartments);
             
             const deptArray = deptQuery.map(obj => obj.name);
 

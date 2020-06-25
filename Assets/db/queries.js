@@ -58,6 +58,11 @@ const queries = {
 		FROM 
 			role
 		LEFT JOIN department ON (role.department_id = department.id)`,
+	viewAllDepartments:
+		`SELECT 
+			id AS 'Dept #', 
+			name AS 'Department' 
+		FROM department`,
 	curEmployees: 
 		`SELECT DISTINCT
             id,
@@ -70,10 +75,10 @@ const queries = {
 			title
 		FROM 
 			role`,
-	viewAllDepartments:
+	curDepartments:
 		`SELECT 
-			id AS 'Dept #', 
-			name AS 'Department' 
+			id, 
+			name 
 		FROM department`
 }
 
