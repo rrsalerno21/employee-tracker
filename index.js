@@ -6,6 +6,8 @@ const util = require('util');
 const colors = require('colors');
 const queries = require('./Assets/db/queries');
 
+// function to create database connection
+// and return promises for close and query methods
 function makeDb() {
     const connection = mysql.createConnection(config);
 
@@ -23,10 +25,13 @@ function makeDb() {
     };
 };
 
+// Create database 'db'
 const db = makeDb(config);
 
+// function to start node app
 async function start() {
     try {
+        // initial prompt to user
         const startResponse = await inquirer.prompt(
             [
                 {
@@ -53,19 +58,24 @@ async function start() {
             ]
         );
         
+        // declare variable for db queries depending on user's response
         let data;
-
+        
+        // switch statement for each case
         switch (startResponse.operation) {
             case 'View All Employees':
-                data = await returnQuery(queries.viewAllEmployees);
+                // get query result for viewAllEmployees
+                data = await db.query(queries.viewAllEmployees);
+
+                // console.log a table
                 consoleTable('All Employees', data);
                 break;
             case 'View All Employees by Department':
-                data = await returnQuery(queries.viewAllEmployeesByDepartment);
+                data = await db.query(queries.viewAllEmployeesByDepartment);
                 consoleTable('All Employees by Department', data);
                 break;
             case 'View All Employees by Manager':
-                data = await returnQuery(queries.viewAllEmployeesByManager);
+                data = await db.query(queries.viewAllEmployeesByManager);
                 consoleTable('All Employees by Manager', data);
                 break;
             case 'Add Employee':
@@ -81,7 +91,7 @@ async function start() {
                 updateData('manager');
                 break;
             case 'View All Departments':
-                data = await returnQuery(queries.viewAllDepartments);
+                data = await db.query(queries.viewAllDepartments);
                 consoleTable('All Departments', data);
                 break;
             case 'Add Department':
@@ -91,7 +101,7 @@ async function start() {
                 removeData('department');
                 break;
             case 'View All Roles':
-                data = await returnQuery(queries.viewAllRoles);
+                data = await db.query(queries.viewAllRoles);
                 consoleTable('All Roles', data);
                 break;
             case 'Add Role':
@@ -108,23 +118,15 @@ async function start() {
     }
 };
 
-// return query function
-async function returnQuery(query) {
-    try {
-        const curQuery = await db.query(query);
-        console.log(curQuery);
-        return curQuery;
-    } catch (error) {
-        throw error;
-    }
-}
-
+// function to log data to console in table format
 async function consoleTable(title, data) {
     try {
-        // for creating a table
+        // check to see if there's any data
         if (data.length === 0) {
+            // if not, notify user
             console.log(`-------------- \n${colors.bold.red('\nThere is currently no data to display.  Add data to get started!')}\n`)
         } else {
+            // if data exists, then console.log the title and the table
             console.log(`-------------- \n${colors.bold(title)}\n`)
             console.table(data);
             //console.log(`=> ${colors.blue(query[index].item_name)} (Bid:$${query[index].highest_bid})\n`);
@@ -132,17 +134,22 @@ async function consoleTable(title, data) {
     } catch (error) {
         throw error;
     } finally {
+        // start the app once completed
         start();
     }
 }
 
+// function to add Employee to table
 async function addEmp() {
     try {
-        const curEmployees = await returnQuery(queries.curEmployees);
+        // get current employee id's and names
+        const curEmployees = await db.query(queries.curEmployees);
 
-        const curRoles = await returnQuery(queries.curRoles);
+        // get current role id's and titles
+        const curRoles = await db.query(queries.curRoles);
 
         let roles = [], managers = [];
+
 
         for (i in curEmployees) {
             managers.push(curEmployees[i].name);
@@ -218,7 +225,7 @@ async function addEmp() {
 
 async function addRole() {
     try {
-        const deptQuery = await returnQuery('SELECT id, name FROM department');
+        const deptQuery = await db.query('SELECT id, name FROM department');
 
         let deptArray = [];
         for (i in deptQuery) {
@@ -289,7 +296,7 @@ async function addDepartment() {
 async function removeData(type) {
     if (type === 'employee') {
         try {
-            const curEmployees = await returnQuery(queries.curEmployees);
+            const curEmployees = await db.query(queries.curEmployees);
 
             let empNames = [];
             for (i in curEmployees) {
@@ -325,7 +332,7 @@ async function removeData(type) {
 
     } else if (type === 'role') {
         try {
-            const curRoles = await returnQuery(queries.curRoles);
+            const curRoles = await db.query(queries.curRoles);
 
             let roleTitles = [];
             for (i in curRoles) {
@@ -360,7 +367,7 @@ async function removeData(type) {
         }
     } else if (type === 'department') {
         try {
-            const deptQuery = await returnQuery('SELECT id, name FROM department');
+            const deptQuery = await db.query('SELECT id, name FROM department');
             let deptArray = [];
             for (i in deptQuery) {
                 deptArray.push(deptQuery[i].name)
@@ -396,7 +403,7 @@ async function removeData(type) {
 
 async function updateData(detail) {
     try {
-        const curEmployees = await returnQuery(queries.curEmployees);
+        const curEmployees = await db.query(queries.curEmployees);
         
         let empArray = [];
         for (i in curEmployees) {
@@ -422,7 +429,7 @@ async function updateData(detail) {
 
         switch (detail) {
             case 'role':
-                const curRoles = await returnQuery(queries.curRoles);
+                const curRoles = await db.query(queries.curRoles);
                 rolesArray = [];
                 for (i in curRoles) {
                     rolesArray.push(curRoles[i].title);
