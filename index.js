@@ -148,9 +148,11 @@ async function addEmp() {
         // get current role id's and titles
         const curRoles = await db.query(queries.curRoles);
 
+        // create arrays of manager names and role titles
         const managers = curEmployees.map(obj => obj.name);
         const roles = curRoles.map(obj => obj.title);
 
+        // prompt the user
         const result = await inquirer.prompt([
             {
                 type: 'input',
@@ -178,11 +180,16 @@ async function addEmp() {
 
         );
 
-        // handle the no manager case
+        // declare variables to find the id's we want
         let finalManagerId, roleID;
+
+        // handle the no manager case
         if (result.manager === 'No Manager') {
+            // if no manager, set the id to null
             finalManagerId = null; 
         } else {
+            // else, loop through the data to find the id
+            // that matches the user's selection
             for (item of curEmployees) {
                 if (item.name === result.manager) {
                     finalManagerId = item.id;
@@ -199,11 +206,12 @@ async function addEmp() {
             }
         }
 
-        // insert add code here
+        // add the user's input and id's to employee table of db
         const addQuery = await db.query(`
             INSERT INTO employee (first_name, last_name, role_id, manager_id)
             VALUES ('${result.first_name}', '${result.last_name}', ${roleID}, ${finalManagerId})`)
 
+        // Console log to tell the user the addition was successful
         console.log(colors.bold.green(`\n${result.first_name} ${result.last_name} added to employee list\n`));
 
     } catch (error) {
@@ -216,10 +224,13 @@ async function addEmp() {
 
 async function addRole() {
     try {
+        // get current department data
         const deptQuery = await db.query(queries.curDepartments);
 
+        // create an array of department names from deptQuery
         const deptArray = deptQuery.map(obj => obj.name);
 
+        // prompt the user
         const response = await inquirer.prompt([
             {
                 type:'input',
@@ -239,7 +250,10 @@ async function addRole() {
             }
         ]);
 
+        // declare variable
         let deptID;
+
+        // loop through data to find the id
         for (item of deptQuery) {
             if (response.department === item.name) {
                 deptID = item.id;
@@ -247,10 +261,12 @@ async function addRole() {
             }
         }
 
+        // add the user's input and id into role table of db
         const addRoleQuery = await db.query(
             `INSERT INTO role (title, salary, department_id) 
             VALUES ('${response.roleName}', '${response.salary}', ${deptID})`);
         
+        // console.log to inform the user of success
         console.log(colors.bold.green(`\n${response.roleName} successfully added to roles.\n`));    
 
     } catch (error) {
@@ -262,6 +278,7 @@ async function addRole() {
 
 async function addDepartment() {
     try {
+        // prompt the user for department name
         const response = await inquirer.prompt([
             {
                 type: 'input',
@@ -270,6 +287,7 @@ async function addDepartment() {
             }
         ])
 
+        // Insert user's input into department table of db
         const addDeptQuery = await db.query(`INSERT INTO department (name) VALUES ('${response.department}')`)
 
         console.log(colors.bold.green(`\n${response.department} department successfully added\n`))
@@ -281,12 +299,16 @@ async function addDepartment() {
 }
 
 async function removeData(type) {
+    // if removing employee
     if (type === 'employee') {
         try {
+            // get employee data from db
             const curEmployees = await db.query(queries.curEmployees);
 
+            // create an array of employee names from data
             const empNames = curEmployees.map(obj => obj.name);
 
+            // prompt user to select who they'd like to remove
             const response = await inquirer.prompt([
                 {
                     type: 'list',
@@ -296,8 +318,11 @@ async function removeData(type) {
                 }
             ]);
 
+            // declare variable for id to delete
             let delId;
 
+            // loop through data to find id to delete
+            // based on user's selection
             for (item of curEmployees) {
                 if (item.name === response.whoToRemove) {
                     delId = item.id;
@@ -305,8 +330,10 @@ async function removeData(type) {
                 }
             }
 
+            // query db to delete selection from employee table
             const delEmpQuery = await db.query(`DELETE FROM employee WHERE id = ${delId}`)
 
+            // console.log to notify of successful deletion
             console.log(colors.bold.green(`\n${response.whoToRemove} removed from employee list\n`));
 
         } catch (error) {
@@ -314,13 +341,17 @@ async function removeData(type) {
         } finally {
             start();
         }
-
+    
+    // if deleting a role
     } else if (type === 'role') {
         try {
+            // get role data from db
             const curRoles = await db.query(queries.curRoles);
 
+            // create array of role titles from data
             const roleTitles = curRoles.map(obj => obj.title);
 
+            // prompt user for which role they'd like to remove
             const response = await inquirer.prompt([
                 {
                     type: 'list',
@@ -330,8 +361,11 @@ async function removeData(type) {
                 }
             ]);
 
+            // declare variable for id to delete
             let delId;
 
+            // loop through data to find id to delete
+            // based on user's selection
             for (item of curRoles) {
                 if (item.title === response.roleToRemove) {
                     delId = item.id;
@@ -339,8 +373,10 @@ async function removeData(type) {
                 }
             }
 
+            // query db to delete selection from role table
             const delEmpQuery = await db.query(`DELETE FROM role WHERE id = ${delId}`);
 
+            // console.log to notify of successful deletion
             console.log(colors.bold.green(`\n${response.roleToRemove} removed from role list\n`));
 
         } catch (error) {
@@ -348,12 +384,17 @@ async function removeData(type) {
         } finally {
             start();
         }
+    
+    // if deleting department
     } else if (type === 'department') {
         try {
+            // get department data from db
             const deptQuery = await db.query(queries.curDepartments);
             
+            // create array of department names from data
             const deptArray = deptQuery.map(obj => obj.name);
 
+            // prompt user for department they'd like to delete
             const deptResponse = await inquirer.prompt([
                 {
                     type: 'list',
@@ -363,7 +404,11 @@ async function removeData(type) {
                 }
             ])
 
+            // declare variable for id to delete
             let deptID;
+
+            // loop through data to find id to delete
+            // based on user's selection
             for (item of deptQuery) {
                 if (item.name === deptResponse.department) {
                     deptID = item.id;
@@ -371,7 +416,10 @@ async function removeData(type) {
                 }
             }
 
+            // query db to delete selection from department table 
             const delDeptQuery = await db.query(`DELETE FROM department WHERE id = ${deptID}`);
+
+            // console.log to notify of successful deletion
             console.log(colors.bold.green(`\n${deptResponse.department} removed from department list\n`));
 
         } catch (error) {
@@ -384,10 +432,13 @@ async function removeData(type) {
 
 async function updateData(detail) {
     try {
+        // get employee data from db
         const curEmployees = await db.query(queries.curEmployees);
         
+        // create array of employee names from data
         const empArray = curEmployees.map(obj => obj.name);
         
+        // prompt user for which employee they'd like to update
         const response = await inquirer.prompt([
             {
                 type: 'list',
@@ -397,7 +448,11 @@ async function updateData(detail) {
             }
         ]);
         
+        // declare variable for id of employee
         let empID;
+        
+        // loop through the data to find id
+        // that matches the user's selection
         for (item of curEmployees) {
             if (item.name === response.employee) {
                 empID = item.id;
@@ -405,12 +460,16 @@ async function updateData(detail) {
             }
         }
 
+        // switch statement based on what we're updating
         switch (detail) {
             case 'role':
+                // get roles data from db
                 const curRoles = await db.query(queries.curRoles);
-                
+
+                // create array of role titles from data
                 const rolesArray = curRoles.map(obj => obj.title);
-                
+
+                // prompt user for which role they'd like to reassign
                 const roleResponse = await inquirer.prompt([
                     {
                         type: 'list',
@@ -420,7 +479,11 @@ async function updateData(detail) {
                     }
                 ]);
 
+                // declare variable for id of employee
                 let newRoleID;
+
+                // loop through the data to find id
+                // that matches the user's selection
                 for (item of curRoles) {
                     if (item.title === roleResponse.newRole) {
                         newRoleID = item.id;
@@ -428,13 +491,19 @@ async function updateData(detail) {
                     }
                 }
 
+                // query db to update selection in employee table 
                 const updateRoleQuery = await db.query('UPDATE employee SET ? WHERE ?', [{role_id: newRoleID},{id: empID}])
-
+                
+                // console.log to notify of successful deletion
                 console.log(colors.bold.green(`\n ${response.employee} role successfully updated. \n`))
                 break;
-
+            
+            // in manager case
             case 'manager':
+                // filter the employee array to exclude the already selected employee
                 const filteredEmpArray = empArray.filter(item => item != response.employee)
+                
+                // prompt user to select manager assignment
                 const managerResponse = await inquirer.prompt([
                     {
                         type: 'list',
@@ -444,10 +513,15 @@ async function updateData(detail) {
                     }
                 ]);
 
+                // declare variable for id of employee
                 let finalManagerId;
+
+                // handle the case of 'No Manager'
                 if (managerResponse.manager === 'No Manager') {
                     finalManagerId = null; 
                 } else {
+                    // loop through the data to find id
+                    // that matches the user's selection
                     for (item of curEmployees) {
                         if (item.name === managerResponse.manager) {
                             finalManagerId = item.id;
@@ -456,8 +530,10 @@ async function updateData(detail) {
                     }
                 };
 
+                // query db to update selection in employee table
                 const updateManagerQuery = await db.query('UPDATE employee SET ? WHERE ?', [{manager_id: finalManagerId},{id: empID}])
 
+                // console.log to notify of successful update
                 console.log(colors.bold.green(`\n ${response.employee}'s manager successfully updated to ${managerResponse.manager}. \n`))
             }
 
