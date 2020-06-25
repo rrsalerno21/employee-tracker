@@ -150,13 +150,12 @@ async function addEmp() {
 
         let roles = [], managers = [];
 
-
-        for (i in curEmployees) {
-            managers.push(curEmployees[i].name);
+        for (item of curEmployees) {
+            managers.push(item.name);
         };
 
-        for (i in curRoles) {
-            roles.push(curRoles[i].title);
+        for (item of curRoles) {
+            roles.push(item.title);
         };
 
         const result = await inquirer.prompt([
@@ -191,18 +190,18 @@ async function addEmp() {
         if (result.manager === 'No Manager') {
             finalManagerId = null; 
         } else {
-            for (i in curEmployees) {
-                if (curEmployees[i].name === result.manager) {
-                    finalManagerId = curEmployees[i].id;
+            for (item of curEmployees) {
+                if (item.name === result.manager) {
+                    finalManagerId = item.id;
                     break;
                 }
             }
         };
 
         // find and set the correct role ID
-        for (i in curRoles) {
-            if (curRoles[i].title === result.role) {
-                roleID = curRoles[i].id;
+        for (item of curRoles) {
+            if (item.title === result.role) {
+                roleID = item.id;
             }
         }
 
@@ -226,8 +225,8 @@ async function addRole() {
         const deptQuery = await db.query('SELECT id, name FROM department');
 
         let deptArray = [];
-        for (i in deptQuery) {
-            deptArray.push(deptQuery[i].name);
+        for (item of deptQuery) {
+            deptArray.push(item.name);
         }
 
         const response = await inquirer.prompt([
@@ -250,9 +249,9 @@ async function addRole() {
         ]);
 
         let deptID;
-        for (i in deptQuery) {
-            if (response.department === deptQuery[i].name) {
-                deptID = deptQuery[i].id;
+        for (item of deptQuery) {
+            if (response.department === item.name) {
+                deptID = item.id;
             }
         }
 
@@ -295,8 +294,8 @@ async function removeData(type) {
             const curEmployees = await db.query(queries.curEmployees);
 
             let empNames = [];
-            for (i in curEmployees) {
-                empNames.push(curEmployees[i].name);
+            for (item of curEmployees) {
+                empNames.push(item.name);
             };
 
             const response = await inquirer.prompt([
@@ -310,9 +309,9 @@ async function removeData(type) {
 
             let delId;
 
-            for (i in curEmployees) {
-                if (curEmployees[i].name === response.whoToRemove) {
-                    delId = curEmployees[i].id;
+            for (item of curEmployees) {
+                if (item.name === response.whoToRemove) {
+                    delId = item.id;
                 }
             }
 
@@ -331,8 +330,8 @@ async function removeData(type) {
             const curRoles = await db.query(queries.curRoles);
 
             let roleTitles = [];
-            for (i in curRoles) {
-                roleTitles.push(curRoles[i].title);
+            for (item of curRoles) {
+                roleTitles.push(item.title);
             };
 
             const response = await inquirer.prompt([
@@ -346,9 +345,9 @@ async function removeData(type) {
 
             let delId;
 
-            for (i in curRoles) {
-                if (curRoles[i].title === response.roleToRemove) {
-                    delId = curRoles[i].id;
+            for (item of curRoles) {
+                if (item.title === response.roleToRemove) {
+                    delId = item.id;
                 }
             }
 
@@ -365,8 +364,8 @@ async function removeData(type) {
         try {
             const deptQuery = await db.query('SELECT id, name FROM department');
             let deptArray = [];
-            for (i in deptQuery) {
-                deptArray.push(deptQuery[i].name)
+            for (item of deptQuery) {
+                deptArray.push(item.name)
             };
 
             const deptResponse = await inquirer.prompt([
@@ -379,9 +378,9 @@ async function removeData(type) {
             ])
 
             let deptID;
-            for (i in deptQuery) {
-                if (deptQuery[i].name === deptResponse.department) {
-                    deptID = deptQuery[i].id;
+            for (item of deptQuery) {
+                if (item.name === deptResponse.department) {
+                    deptID = item.id;
                     break;
                 }
             }
@@ -402,8 +401,8 @@ async function updateData(detail) {
         const curEmployees = await db.query(queries.curEmployees);
         
         let empArray = [];
-        for (i in curEmployees) {
-            empArray.push(curEmployees[i].name);
+        for (item of curEmployees) {
+            empArray.push(item.name);
         }
         
         const response = await inquirer.prompt([
@@ -416,9 +415,9 @@ async function updateData(detail) {
         ]);
         
         let empID;
-        for (i in curEmployees) {
-            if (curEmployees[i].name === response.employee) {
-                empID = curEmployees[i].id;
+        for (item of curEmployees) {
+            if (item.name === response.employee) {
+                empID = item.id;
                 break;
             }
         }
@@ -427,8 +426,8 @@ async function updateData(detail) {
             case 'role':
                 const curRoles = await db.query(queries.curRoles);
                 rolesArray = [];
-                for (i in curRoles) {
-                    rolesArray.push(curRoles[i].title);
+                for (item of curRoles) {
+                    rolesArray.push(item.title);
                 }
 
                 const roleResponse = await inquirer.prompt([
@@ -441,9 +440,9 @@ async function updateData(detail) {
                 ]);
 
                 let newRoleID;
-                for (i in curRoles) {
-                    if (curRoles[i].title === roleResponse.newRole) {
-                        newRoleID = curRoles[i].id;
+                for (item of curRoles) {
+                    if (item.title === roleResponse.newRole) {
+                        newRoleID = item.id;
                         break;
                     }
                 }
@@ -468,9 +467,9 @@ async function updateData(detail) {
                 if (managerResponse.manager === 'No Manager') {
                     finalManagerId = null; 
                 } else {
-                    for (i in curEmployees) {
-                        if (curEmployees[i].name === managerResponse.manager) {
-                            finalManagerId = curEmployees[i].id;
+                    for (item of curEmployees) {
+                        if (item.name === managerResponse.manager) {
+                            finalManagerId = item.id;
                             break;
                         }
                     }
